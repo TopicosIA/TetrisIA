@@ -35,10 +35,6 @@ type (
 		rotacionFiguras RotacionFiguras
 	}
 
-	Ranking struct {
-		scores []uint64 //valores de 0 hasta mucho
-	}
-
   Tablero struct {
 		boardsIndex  int
 		width        int
@@ -62,12 +58,15 @@ type (
 		tecla_salir     chan struct{}
 		opciones_teclas chan *termbox.Event
 	}
-
+Ranking struct{
+	pts []uint64 //puntos realizados en lapartida
+	//podemos meter una variable string para el nombre
+}
   MotorJuego struct {
-		stopped      		bool
-		chanStop     		chan struct{}
-		tecla     			*TeclaPresionada
-		//ranking      *Ranking
+		stopped      		 bool
+		chanStop     		 chan struct{}
+		tecla     			 *TeclaPresionada
+		ranking          *Ranking
 		timer          	 *time.Timer
 		tickTime      	 time.Duration
 		pausado       	 bool
