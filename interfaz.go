@@ -1,7 +1,9 @@
 package main
 
 import (
+  "time"
   "fmt"
+  "math/rand"
   "github.com/nsf/termbox-go"
 )
 
@@ -13,7 +15,6 @@ func NuevaInterfaz() {
 
 	termbox.SetInputMode(termbox.InputEsc)
 	termbox.Flush()
-
 	interfaz = &Interfaz{}
 }
 
@@ -123,7 +124,7 @@ func (interfaz *Interfaz) dibujaTextoTablero() {
   interfaz.dibujaTexto(6, 15, "LINEAS", termbox.ColorWhite, termbox.ColorBlue)
 	interfaz.dibujaTexto(4, 16, fmt.Sprintf("%6d", motor.lineasBorradas), termbox.ColorBlack, termbox.ColorWhite)
   //
-  interfaz.dibujaTexto(12, 25, "     ←        z      <SPC>     x,↑      →", termbox.ColorWhite, termbox.ColorBlack)
+  interfaz.dibujaTexto(12, 25, "     ←       s      <SPC>     d,↑      →", termbox.ColorWhite, termbox.ColorBlack)
   interfaz.dibujaTexto(12, 26, " izquierda    ↺     bajar      ↻    derecha", termbox.ColorBlack, termbox.ColorWhite)
 
   interfaz.dibujaTexto(posX, posY, "j    - jugar IA", termbox.ColorWhite, termbox.ColorBlack)
@@ -155,7 +156,7 @@ func (interfaz *Interfaz) refrescarPantalla() {
 		interfaz.dibujarPantallaInicio()
 	} else if motor.gameOver {
 		interfaz.dibujarGameOver()
-		//view.drawRankingScores()
+		interfaz.dibujaRankingScores()
 	} else if motor.pausado {
 		interfaz.dibujarPausa()
 	} else {//empieza el juego
@@ -213,4 +214,56 @@ func (interfaz *Interfaz) dibujarGameOver() {
 	interfaz.dibujarTextoCentroTablero(y, " GAME OVER", termbox.ColorWhite, termbox.ColorBlack)
 	y += 2
 	interfaz.dibujarTextoCentroTablero(y, "SPACE para iniciar", termbox.ColorWhite, termbox.ColorBlack)
+}
+
+//colorear linea del color
+func (interfaz *Interfaz) colorizeLine(y int, color termbox.Attribute) {
+	for x := 0; x < tablero.width; x++ {
+		termbox.SetCell(x*2+posX+2, y+posY+1, ' ', termbox.ColorDefault, color)
+		termbox.SetCell(x*2+posX+3, y+posY+1, ' ', termbox.ColorDefault, color)
+	}
+}
+
+
+func (interfaz *Interfaz) ShowDeleteAnimation(lines []int) {
+	interfaz.refrescarPantalla()
+
+	for times := 0; times < 3; times++ {
+		for _, y := range lines {
+			interfaz.colorizeLine(y, termbox.ColorGreen)
+		}
+		termbox.Flush()
+		time.Sleep(140 * time.Millisecond)
+
+    interfaz.refrescarPantalla()
+		time.Sleep(140 * time.Millisecond)
+	}
+}
+//Al perder muestra dos formas de borrar la pantalla
+func (interfaz *Interfaz) MostrarAnimacionGameOver() {
+	logger.Info("View ShowGameOverAnimation start")
+
+	switch rand.Intn(3) {
+	case 0:
+		for y := tablero.height - 1; y >= 0; y-- {
+			interfaz.colorizeLine(y, termbox.ColorBlack)
+			termbox.Flush()
+			time.Sleep(60 * time.Millisecond)
+		}
+
+	case 1:
+		for y := 0; y < tablero.height; y++ {
+			interfaz.colorizeLine(y, termbox.ColorBlack)
+			termbox.Flush()
+			time.Sleep(60 * time.Millisecond)
+		}
+  }
+	logger.Info("View ShowGameOverAnimation end")
+}
+
+func (interfaz *Interfaz) dibujaRankingScores() {
+	y := posY + 7
+	for index, line := range motor.ranking.pts {
+		interfaz.dibujarTextoCentroTablero(y+index, fmt.Sprintf("%1d: %6d", index+1, line), termbox.ColorWhite, termbox.ColorBlack)
+	}
 }
