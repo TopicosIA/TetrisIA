@@ -40,30 +40,39 @@ func (figura *Figura) MD() {
 	figura.x++
 }
 
-func (figura *Figura) RotarDer() *Figura{
+func (figura *Figura) CopiaRotadaDerecha() *Figura{
   nuevaFigura := *figura
-  figura.rotacion++
+	nuevaFigura.RotarDerecha()
+  return &nuevaFigura
+}
+func (figura *Figura) RotarDerecha() {
+	figura.rotacion++
+	//regresamos a la figura inicial
   if figura.rotacion > 3{
     figura.rotacion=0
   }
+}
+
+func (figura *Figura) CopiaRotadaIzquierda() *Figura{
+  nuevaFigura := *figura
+	nuevaFigura.RotarIzquierda()
   return &nuevaFigura
 }
 
-func (figura *Figura) RotarIzq() *Figura{
-  nuevaFigura := *figura
-  if figura.rotacion < 1{
+func (figura *Figura) RotarIzquierda() {
+	if figura.rotacion < 1{
     figura.rotacion = 3
+		return
   }
   figura.rotacion--
-  return &nuevaFigura
 }
 
-func (figura *Figura) MoverAbajo() *Figura{
-  nuevaFigura := *figura
-	//figura.y++ aqui truena macizo
-	nuevaFigura.MAbajo()
-  return &nuevaFigura
+func (figura *Figura) MoverAbajo() *Figura {
+	newFigura := *figura
+	newFigura.MAbajo()
+	return &newFigura
 }
+
 func (figura *Figura) MAbajo() {
 	figura.y++
 }
