@@ -62,7 +62,7 @@ func (tecla *TeclaPresionada) ProcesarEvento(evento *termbox.Event) {
 		}
 		return
 	}
-  if motor.pausado {
+  if motor.pausado{
     if evento.Ch == 'p'{
       motor.QuitarPausa()
     }
@@ -73,9 +73,9 @@ func (tecla *TeclaPresionada) ProcesarEvento(evento *termbox.Event) {
 	if evento.Ch == 0 {
 		switch evento.Key {
 		case termbox.KeySpace:
-			//board.MinoDrop()
+			tablero.DescensoFigura()
 		case termbox.KeyArrowUp:
-			//board.MinoDrop()
+			tablero.RotarFiguraDerecha()
 		case termbox.KeyArrowDown:
 			///board.MinoMoveDown()
 		case termbox.KeyArrowLeft:
@@ -85,10 +85,10 @@ func (tecla *TeclaPresionada) ProcesarEvento(evento *termbox.Event) {
 		}
 	} else {
 		switch evento.Ch {
-		case 'z':
-			//board.MinoRotateLeft()
-		case 'x':
-			//board.MinoRotateRight()
+		case 's':
+			tablero.RotarFiguraIzquierda()
+		case 'd':
+			tablero.RotarFiguraDerecha()
 		case 'p':
 			motor.Pause()
 		case 'i':
