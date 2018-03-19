@@ -1,8 +1,8 @@
 package main
 
 import (
-
-	//"math/rand"
+	"time"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"gopkg.in/inconshreveable/log15.v2"
@@ -16,7 +16,7 @@ func main() {
 		logger.SetHandler(log15.Must.FileHandler(baseDir+"/tetrisAI.log", log15.LogfmtFormat()))
 	}
 
-	//rand.Seed(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())
 	CrearFiguras()
 	NuevoTablero()
 	NuevaInterfaz()
