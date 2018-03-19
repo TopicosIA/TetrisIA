@@ -76,6 +76,7 @@ func (tablero *Tablero) DibujarFiguraPrevia() {
 func (tablero *Tablero) DibujarFiguraActual(){
   tablero.figuraActual.DibujaFigura(FiguraActual)
 }
+
 func (tablero *Tablero) DibujarSombraFigura(){
   figura := tablero.figuraActual.MoverAbajo()
   if !figura.LocacionValida(false){
@@ -83,7 +84,7 @@ func (tablero *Tablero) DibujarSombraFigura(){
   }
   //manda la sombra hasta abajo
   for figura.LocacionValida(false) {
-		figura.MoverAbajo()
+		figura.MAbajo()
 	}
   //sube una posicion la figura
 	figura.MoverArriba()
@@ -98,6 +99,82 @@ func (tablero *Tablero) MoverIzquierda() {
 		tablero.StartLockDelayIfBottom()
 	}
 }
+func (tablero *Tablero) MoverDerecha() {
+  tablero.distAlPiso = 0
+	figura := tablero.figuraActual.MoverDer()
+	if figura.LocacionValida(false) {
+		tablero.figuraActual = figura
+		tablero.StartLockDelayIfBottom()
+	}
+}
+
+func (tablero *Tablero) RotarFiguraDerecha() {
+	tablero.distAlPiso = 0
+	figura := tablero.figuraActual.CopiaRotadaDerecha()
+	if figura.LocacionValida(false) {
+		tablero.figuraActual = figura
+		tablero.StartLockDelayIfBottom()
+		return
+	}
+	figura.MoverIzq()
+	if figura.LocacionValida(false) {
+		tablero.figuraActual = figura
+		tablero.StartLockDelayIfBottom()
+		return
+	}
+	figura.MoverDer()
+	figura.MoverDer()
+	if figura.LocacionValida(false) {
+		tablero.figuraActual = figura
+		tablero.StartLockDelayIfBottom()
+		return
+	}
+}
+func (tablero *Tablero) RotarFiguraIzquierda() {
+	tablero.distAlPiso = 0
+	figura := tablero.figuraActual.CopiaRotadaIzquierda()
+	if figura.LocacionValida(false) {
+		tablero.figuraActual = figura
+		tablero.StartLockDelayIfBottom()
+		return
+	}
+	figura.MoverIzq()
+	if figura.LocacionValida(false) {
+		tablero.figuraActual = figura
+		tablero.StartLockDelayIfBottom()
+		return
+	}
+	figura.MoverDer()
+	figura.MoverDer()
+	if figura.LocacionValida(false) {
+		tablero.figuraActual = figura
+		tablero.StartLockDelayIfBottom()
+		return
+	}
+}
+
+func (tablero *Tablero) DescensoFigura() {
+	tablero.distAlPiso = 0
+	figura := tablero.figuraActual.MoverAbajo()
+	for figura.LocacionValida(false) {
+		tablero.distAlPiso++
+		figura.MAbajo()
+	}
+	for i := 0; i < tablero.distAlPiso; i++ {
+		tablero.figuraActual.MAbajo()
+	}
+	if !tablero.figuraActual.LocacionValida(true) {
+		motor.GameOver()
+		return
+	}
+	if tablero.distAlPiso < 1 {
+		return
+	}
+	if !tablero.StartLockDelayIfBottom() {
+		motor.ResetTimer(0)
+	}
+}
+
 
 func (tablero *Tablero) MoverFiguraAbajo() {
 	figura := tablero.figuraActual.MoverAbajo()
@@ -113,7 +190,7 @@ func (tablero *Tablero) MoverFiguraAbajo() {
 		motor.GameOver()
 		return
 	}
-	//tablero.sigFigura()
+	tablero.sigFigura()
 }
 
 //falta ver que hace bien
@@ -126,21 +203,13 @@ func (tablero *Tablero) StartLockDelayIfBottom() bool {
 	return true
 }
 
-func (tablero *Tablero) MoverDerecha() {
-  tablero.distAlPiso = 0
-	figura := tablero.figuraActual.MoverDer()
-	if figura.LocacionValida(false) {
-		tablero.figuraActual = figura
-		tablero.StartLockDelayIfBottom()
-	}
-}
 
 func (tablero *Tablero) sigFigura() {
-	//engine.AddScore(board.dropDistance)
+	motor.SumaPts(tablero.distAlPiso)
 
 	tablero.figuraActual.PonerEnTablero()
 
-	//board.deleteCheck()
+	tablero.deleteCheck()
 
 	if !tablero.figuraPrevia.LocacionValida(false) {
 		tablero.figuraPrevia.MoverArriba()
@@ -154,4 +223,52 @@ func (tablero *Tablero) sigFigura() {
 	tablero.figuraPrevia = NuevaFigura()
 	//engine.AiGetBestQueue()
 	motor.ResetTimer(0)
+}
+
+func (tablero *Tablero) deleteCheck() {
+	lines := tablero.fullLines()
+	if len(lines) < 1 {
+		return
+	}
+
+	interfaz.ShowDeleteAnimation(lines)
+	for _, line := range lines {
+		tablero.deleteLine(line)
+	}
+
+	motor.AGregarLineasBorradas(len(lines))
+}
+
+func (tablero *Tablero) fullLines() []int {
+	fullLines := make([]int, 0, 1)
+	for j := 0; j < tablero.height; j++ {
+		if tablero.isFullLine(j) {
+			fullLines = append(fullLines, j)
+		}
+	}
+	return fullLines
+}
+
+func (tablero *Tablero) isFullLine(j int) bool {
+	for i := 0; i < tablero.width; i++ {
+		if tablero.colors[i][j] == blankColor {
+			return false
+		}
+	}
+	return true
+}
+
+func (tablero *Tablero) deleteLine(line int) {
+	for i := 0; i < tablero.width; i++ {
+		tablero.colors[i][line] = blankColor
+	}
+	for j := line; j > 0; j-- {
+		for i := 0; i < tablero.width; i++ {
+			tablero.colors[i][j] = tablero.colors[i][j-1]
+			tablero.rotation[i][j] = tablero.rotation[i][j-1]
+		}
+	}
+	for i := 0; i < tablero.width; i++ {
+		tablero.colors[i][0] = blankColor
+	}
 }
