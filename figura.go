@@ -7,7 +7,7 @@ import (
 )
 
 func NuevaFigura() *Figura {
-  rotacionFiguras := figuras.bolsaFiguras[figuras.bolsaRandom[figuras.indiceBolsa]]
+	rotacionFiguras := figuras.bolsaFiguras[figuras.bolsaRandom[figuras.indiceBolsa]]
   figuras.indiceBolsa++
   if figuras.indiceBolsa > 6{
     figuras.indiceBolsa=0

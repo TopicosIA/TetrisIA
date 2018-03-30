@@ -2,7 +2,6 @@ package main
 
 import (
   "math/rand"
-
   "github.com/nsf/termbox-go"
 )
 
@@ -83,7 +82,7 @@ func CrearFiguras(){
 	}
 
   figuras = &Figuras{
-    bolsaFiguras: [7]RotacionFiguras{rotacionFI,rotacionFZ,rotacionFJ,rotacionFT,rotacionFO,rotacionFL,rotacionFS},
+    bolsaFiguras: [7]RotacionFiguras{rotacionFI, rotacionFJ, rotacionFL, rotacionFO, rotacionFS, rotacionFT, rotacionFZ},
     bolsaRandom: rand.Perm(7),
   }
 }

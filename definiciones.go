@@ -49,6 +49,12 @@ type (
   Interfaz struct {
   }
 
+	Sonido struct {
+		tickTimeCancion time.Duration
+		timerCancion 	  *time.Timer
+		reproduciendo 	bool
+  }
+
   Boards struct {
 		colors   [][]termbox.Attribute
 		rotation [][]int
@@ -75,9 +81,7 @@ Ranking struct{
 		score            int
 		nivel            int
 		lineasBorradas   int
-		//ai           *Ai
-		aiEnabled    bool
-		//aiTimer      *time.Timer
+		aiEnabled    		 bool
 }
 )
 var (
@@ -87,5 +91,6 @@ var (
 	figuras   *Figuras
 	tablero   *Tablero
 	interfaz  *Interfaz
+	sonido    *Sonido
 	motor  		*MotorJuego
 )

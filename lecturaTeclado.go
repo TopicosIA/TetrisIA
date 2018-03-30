@@ -58,10 +58,12 @@ func (tecla *TeclaPresionada) ProcesarEvento(evento *termbox.Event) {
 			switch evento.Key{
 			case termbox.KeySpace:
 				motor.NuevoJuego()
+				sonido.Play()
 			}
 		}
 		return
 	}
+
   if motor.pausado{
     if evento.Ch == 'p'{
       motor.QuitarPausa()

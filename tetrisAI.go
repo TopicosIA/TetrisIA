@@ -17,6 +17,7 @@ func main() {
 	}
 
 	rand.Seed(time.Now().UnixNano())
+	NuevoSonido()
 	CrearFiguras()
 	NuevoTablero()
 	NuevaInterfaz()

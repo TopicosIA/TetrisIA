@@ -22,18 +22,20 @@ func (motor *MotorJuego) Run() {
 	motor.timer = time.NewTimer(motor.tickTime)
 	motor.timer.Stop()
 
-	//preparamos el juego
+  sonido.timerCancion = time.NewTimer(sonido.tickTimeCancion)
+  sonido.timerCancion.Stop()
+
+  //preparamos el juego
   motor.ranking = NewRanking()
   tablero.Limpiar()
 	interfaz.refrescarPantalla()
-
 	//creamos una go rutina para siempre estar escuchando al teclado
   motor.tecla = NuevaTecla()
 	go motor.tecla.Run()
 
   loop:
-  	for {
-  		select {
+    for {
+      select {
   		case <-motor.chanStop:
   			break loop
   		default:
@@ -43,6 +45,8 @@ func (motor *MotorJuego) Run() {
   				interfaz.refrescarPantalla()
   			case <-motor.timer.C:
   				motor.tick() //desplazamos la pieza hacia abajo
+        case <-sonido.timerCancion.C:
+          sonido.Play()
       case <-motor.chanStop:
   				break loop
   			}
@@ -78,6 +82,7 @@ func (motor *MotorJuego) NuevoJuego() {
 	motor.score = 0
 	motor.nivel = 1
 	motor.lineasBorradas = 0
+  sonido.tickTimeCancion = 1* time.Second
 
 loop:
 	for {
@@ -96,6 +101,7 @@ loop:
 func (motor *MotorJuego) GameOver() {
 	logger.Info("MotorJuego GameOver start")
 	motor.Pause()
+  //sonido.Stop()
 	motor.gameOver = true
   interfaz.MostrarAnimacionGameOver()
 loop:
@@ -132,6 +138,9 @@ func (motor *MotorJuego) QuitarPausa(){
 func (motor *MotorJuego) tick() {
 	tablero.MoverFiguraAbajo()
 	interfaz.refrescarPantalla()
+  /*if sonido.reproduciendo == true{
+    sonido.ResetTimerS(0)
+  }*/
 }
 
 func (motor *MotorJuego) ResetTimer(duracion time.Duration) {
@@ -178,6 +187,7 @@ func (motor *MotorJuego) SumaPts(pts int) {
 		motor.score = 9999999
 	}
 }
+
 func (motor *MotorJuego) LevelUp() {
 	if motor.nivel >= 30 {
 		return
