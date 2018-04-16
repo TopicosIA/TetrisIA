@@ -58,7 +58,8 @@ func (tecla *TeclaPresionada) ProcesarEvento(evento *termbox.Event) {
 			switch evento.Key{
 			case termbox.KeySpace:
 				motor.NuevoJuego()
-				sonido.Play()
+				//sonido.Play()
+				//motor.HabilitarAgente()
 			}
 		}
 		return
@@ -71,6 +72,15 @@ func (tecla *TeclaPresionada) ProcesarEvento(evento *termbox.Event) {
     return
   }
 
+	if motor.agHabilitado {
+		switch evento.Ch {
+		case 'p':
+			motor.Pause()
+		case 'i':
+			motor.DeshabilitarAgente()
+		}
+		return
+	}
 	//opciones de teclas
 	if evento.Ch == 0 {
 		switch evento.Key {
@@ -79,7 +89,7 @@ func (tecla *TeclaPresionada) ProcesarEvento(evento *termbox.Event) {
 		case termbox.KeyArrowUp:
 			tablero.RotarFiguraDerecha()
 		case termbox.KeyArrowDown:
-			///board.MinoMoveDown()
+			tablero.MoverFiguraAbajo()
 		case termbox.KeyArrowLeft:
 			tablero.MoverIzquierda()
 		case termbox.KeyArrowRight:
@@ -93,8 +103,8 @@ func (tecla *TeclaPresionada) ProcesarEvento(evento *termbox.Event) {
 			tablero.RotarFiguraDerecha()
 		case 'p':
 			motor.Pause()
-		case 'i':
-			//engine.EnabledAi()
+		case 'j':
+			motor.HabilitarAgente()
 		}
 	}
 }

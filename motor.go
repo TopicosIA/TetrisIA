@@ -11,6 +11,7 @@ func NuevoMotorJuego() {
 		gameOver: false,
 		tableroInicio: true,//para que se vea los mensajes de inicio
 		tickTime: time.Hour,
+    agente: NuevoAgente(),
 	}
 }
 func (motor *MotorJuego) Run() {
@@ -21,6 +22,9 @@ func (motor *MotorJuego) Run() {
 	//inicializamos el timer para poder pausar y todo el show
 	motor.timer = time.NewTimer(motor.tickTime)
 	motor.timer.Stop()
+
+  motor.agTimer = time.NewTimer(motor.tickTime)
+	motor.agTimer.Stop()
 
   sonido.timerCancion = time.NewTimer(sonido.tickTimeCancion)
   sonido.timerCancion.Stop()
@@ -45,8 +49,11 @@ func (motor *MotorJuego) Run() {
   				interfaz.refrescarPantalla()
   			case <-motor.timer.C:
   				motor.tick() //desplazamos la pieza hacia abajo
-        case <-sonido.timerCancion.C:
-          sonido.Play()
+        //case <-sonido.timerCancion.C:
+        //  sonido.Play()
+        case <-motor.agTimer.C:
+          motor.agente.tomarAccion()
+  				motor.agTimer.Reset(motor.tickTime / 6)
       case <-motor.chanStop:
   				break loop
   			}
@@ -67,7 +74,7 @@ func (motor *MotorJuego) Stop() {
 		close(motor.chanStop)
 	}
 	motor.timer.Stop()
-	//motor.aiTimer.Stop()
+	motor.agTimer.Stop()
 
 	logger.Info("MotorJuego Stop end")
 }
@@ -104,6 +111,7 @@ func (motor *MotorJuego) GameOver() {
   //sonido.Stop()
 	motor.gameOver = true
   interfaz.MostrarAnimacionGameOver()
+
 loop:
 	for {
 		select {
@@ -126,11 +134,20 @@ func (motor *MotorJuego) Pause() {
 		default:
 		}
 	}
+  if !motor.agTimer.Stop() {
+		select {
+		case <-motor.agTimer.C:
+		default:
+		}
+	}
 	motor.pausado = true
 }
 
 func (motor *MotorJuego) QuitarPausa(){
   motor.timer.Reset(motor.tickTime)
+  if motor.agHabilitado {
+		motor.agTimer.Reset(motor.tickTime / 6)
+	}
 	motor.pausado = false
 }
 
@@ -157,6 +174,13 @@ func (motor *MotorJuego) ResetTimer(duracion time.Duration) {
 		// duration is lock delay
 		motor.timer.Reset(duracion)
 	}
+}
+
+func (motor *MotorJuego) AiGetBestQueue() {
+	if !motor.agHabilitado {
+		return
+	}
+	go motor.agente.maxAccion()
 }
 
 func (motor *MotorJuego) AGregarLineasBorradas(lines int) {
@@ -208,5 +232,21 @@ func (motor *MotorJuego) LevelUp() {
 	default:
 		// 480 to 160
 		motor.tickTime = time.Duration(10*(52-4*motor.nivel)) * time.Millisecond
+	}
+}
+
+func (motor *MotorJuego) HabilitarAgente() {
+	motor.agHabilitado = true
+	go motor.agente.maxAccion()
+	motor.agTimer.Reset(motor.tickTime / 6)
+}
+
+func (engine *MotorJuego) DeshabilitarAgente() {
+	motor.agHabilitado = false
+	if !motor.agTimer.Stop() {
+		select {
+		case <-motor.agTimer.C:
+		default:
+		}
 	}
 }

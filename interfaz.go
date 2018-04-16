@@ -7,7 +7,8 @@ import (
   "github.com/nsf/termbox-go"
 )
 
-func NuevaInterfaz() {
+
+func NuevaInterfaz(){
   err := termbox.Init()
 	if err != nil {
 		panic(err)

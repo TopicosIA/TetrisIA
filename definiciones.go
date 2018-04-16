@@ -10,12 +10,14 @@ const (
 	blankColor      = termbox.ColorBlack
 	posX    = 20
 	posY    = 2
-	rankingFileName = "/tetris2.db"
+	rankingFileName = "/tetrisIA.db"
+
 
 	VistaPreviaFigura TipoFigura = iota
 	FiguraActual         				 = iota
 	SombraFigura             	   = iota
 )
+
 type (
   TipoFigura       int
   BloquesFigura    [][]termbox.Attribute //para crear la figura
@@ -49,6 +51,13 @@ type (
   Interfaz struct {
   }
 
+	Agente struct{
+		listaAcciones    *[]rune
+		nuevaLista *[]rune
+		index    int
+		estado []int
+	}
+
 	Sonido struct {
 		tickTimeCancion time.Duration
 		timerCancion 	  *time.Timer
@@ -81,9 +90,13 @@ Ranking struct{
 		score            int
 		nivel            int
 		lineasBorradas   int
-		aiEnabled    		 bool
+		agHabilitado 		 bool
+		agente					 *Agente
+		agTimer		       *time.Timer
 }
+
 )
+
 var (
 	boards 		[]Boards
 	baseDir 	string
@@ -93,4 +106,6 @@ var (
 	interfaz  *Interfaz
 	sonido    *Sonido
 	motor  		*MotorJuego
+
+
 )

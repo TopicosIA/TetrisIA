@@ -175,7 +175,6 @@ func (tablero *Tablero) DescensoFigura() {
 	}
 }
 
-
 func (tablero *Tablero) MoverFiguraAbajo() {
 	figura := tablero.figuraActual.MoverAbajo()
 	if figura.LocacionValida(false) {
@@ -221,7 +220,7 @@ func (tablero *Tablero) sigFigura() {
 
 	tablero.figuraActual = tablero.figuraPrevia
 	tablero.figuraPrevia = NuevaFigura()
-	//engine.AiGetBestQueue()
+	motor.AiGetBestQueue()
 	motor.ResetTimer(0)
 }
 
