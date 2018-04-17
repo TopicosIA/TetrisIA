@@ -87,7 +87,7 @@ func (motor *MotorJuego) NuevoJuego() {
 	motor.gameOver = false
 	motor.tickTime = 480 * time.Millisecond
 	motor.score = 0
-	motor.nivel = 1
+	motor.nivel = 0
 	motor.lineasBorradas = 0
   sonido.tickTimeCancion = 1* time.Second
 
@@ -101,7 +101,6 @@ loop:
 	}
 //hace que la pieza se desplace
 	motor.QuitarPausa()
-
 	logger.Info("MotorJuego NewGame end")
 }
 
@@ -109,7 +108,11 @@ func (motor *MotorJuego) GameOver() {
 	logger.Info("MotorJuego GameOver start")
 	motor.Pause()
   //sonido.Stop()
-	motor.gameOver = true
+	if motor.agHabilitado == true{
+		motor.NuevoJuego()
+	}else{
+			motor.gameOver = true
+	}
   interfaz.MostrarAnimacionGameOver()
 
 loop:

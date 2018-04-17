@@ -114,7 +114,7 @@ func (interfaz *Interfaz) dibujarTextoCentroTablero(y int, text string, fg termb
 
 func (interfaz *Interfaz) dibujaTextoTablero() {
 	posX := posX + tablero.width*2 + 8
-	posY := posY + 18
+	posY := posY + 17
 
 	interfaz.dibujaTexto(7, 5, "SCORE", termbox.ColorWhite, termbox.ColorBlue)
 	interfaz.dibujaTexto(5, 6, fmt.Sprintf("%5d",motor.score), termbox.ColorBlack, termbox.ColorWhite)
@@ -127,14 +127,15 @@ func (interfaz *Interfaz) dibujaTextoTablero() {
   //
   interfaz.dibujaTexto(12, 25, "     ←       s      <SPC>     d,↑      →", termbox.ColorWhite, termbox.ColorBlack)
   interfaz.dibujaTexto(12, 26, " izquierda    ↺     bajar      ↻    derecha", termbox.ColorBlack, termbox.ColorWhite)
-
-  interfaz.dibujaTexto(posX, posY, "j    - jugar IA", termbox.ColorWhite, termbox.ColorBlack)
-	posY++
-	interfaz.dibujaTexto(posX, posY, "e    - entrenar IA", termbox.ColorWhite, termbox.ColorBlack)
+  interfaz.dibujaTexto(posX, posY, "j    - Habilitar IA", termbox.ColorWhite, termbox.ColorBlack)
   posY++
-	interfaz.dibujaTexto(posX, posY, "p    - pausa", termbox.ColorWhite, termbox.ColorBlack)
+  interfaz.dibujaTexto(posX, posY, "i    - Deshabilitar IA", termbox.ColorWhite, termbox.ColorBlack)
 	posY++
-	interfaz.dibujaTexto(posX, posY, "q    - salir", termbox.ColorWhite, termbox.ColorBlack)
+	interfaz.dibujaTexto(posX, posY, "e    - Entrenar IA", termbox.ColorWhite, termbox.ColorBlack)
+  posY++
+	interfaz.dibujaTexto(posX, posY, "p    - Pausa", termbox.ColorWhite, termbox.ColorBlack)
+	posY++
+	interfaz.dibujaTexto(posX, posY, "q    - Salir", termbox.ColorWhite, termbox.ColorBlack)
 }
 
 
@@ -164,7 +165,10 @@ func (interfaz *Interfaz) refrescarPantalla() {
     tablero.DibujarTablero()
 		tablero.DibujarFiguraPrevia()
     tablero.DibujarFiguraActual()
-    tablero.DibujarSombraFigura()
+    //condicion donde la figura sombra solo esta en el nivel 0
+    if motor.nivel == 0{
+      tablero.DibujarSombraFigura()
+    }
 	}
 
 	termbox.Flush()
